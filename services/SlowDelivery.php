@@ -2,9 +2,10 @@
 
 namespace elmys\intelogis\services;
 
+use elmys\intelogis\adapters\SlowDeliveryCreator;
 use elmys\intelogis\components\DeliveryService;
 
-class SlowDelivery implements DeliveryService
+class SlowDelivery
 {
     public $tariffs = [
         'msk' => [
@@ -39,42 +40,32 @@ class SlowDelivery implements DeliveryService
         ],
     ];
 
-    public static $basePrice = 150;
-    public $parentObj;
+    public $basePrice = 150;
+    public $params;
 
-    public function __construct(SlowDeliveryCreator $obj)
+    public function __construct(array $params)
     {
-        $this->parentObj = $obj;
+        $this->params = $params;
     }
 
-    public function legacyCalc(): array
+    public function legacyCalc(): string
     {
-        /*
-         {
- 	"coefficient": float //коэффициент (конечная цена есть произведение базовой стоимости и коэффициента)
- 	"date": string //дата доставки в формате 2017-10-20
- 	"error": string
-}
-
-         * */
-
-        $res = [];
         $coefficient = 0;
         $sPeriod = '';
         $error = '';
 
         try {
-            if(isset($this->tariffs[$this->parentObj->sourceKladr]) && $tariff = $this->tariffs[$this->parentObj->sourceKladr]){
-                if(isset($tariff[$this->parentObj->targetKladr]) && $tariffFinish = $tariff[$this->parentObj->targetKladr]){
+            if(isset($this->tariffs[$this->params['sourceKladr']]) && $tariff = $this->tariffs[$this->params['sourceKladr']]){
+                if(isset($tariff[$this->params['targetKladr']]) && $tariffFinish = $tariff[$this->params['targetKladr']]){
                     $coefficient = $tariffFinish['koef'];
                     $period = new \DateTime();
                     $period->modify('+' . $tariffFinish['period'] . ' day');
                     $sPeriod = $period->format('Y-m-d');
                 }else{
-                    $error = 'Not found finish tariff';
+                    $error = 'Not found destinate kladr on tariff';
                 }
             }else{
-                $error = 'Not found tariff';
+                $error = 'Not found target kladr on tariff';
             }
         }catch(\Exception $e){
             $error = $e->getMessage();
@@ -82,20 +73,9 @@ class SlowDelivery implements DeliveryService
 
         $res = [
             'coefficient' => $coefficient,
-            'period' => $sPeriod,
+            'period' => $sPeriod, // тут можно было в исходной тарифной сетке прописать даты, но, я думаю так интереснее, тем более то, что сервис следует формату ТЗ
             'error' => $error,
         ];
-        return $res;
+        return json_encode($res);
     }
-
-    public function calculate(): string
-    {
-        $b = $this->legacyCalc();
-        return json_encode([
-            'price' => 1.125,
-            'date' => '2022-08-27',
-            'error' => '',
-        ]);
-    }
-
 }

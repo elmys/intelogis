@@ -1,9 +1,10 @@
 <?php
 namespace elmys\intelogis;
 
-use elmys\intelogis\services\SlowDeliveryCreator;
+use elmys\intelogis\adapters\FastDeliveryCreator;
+use elmys\intelogis\adapters\SlowDeliveryCreator;
 
-class ClientClass
+class TestClass
 {
     public static $testPackages = [
         4334 => [
@@ -31,8 +32,15 @@ class ClientClass
 
     public static function run() :void{
         foreach (self::$testPackages as $id => $packageData) {
-            $slow = new SlowDeliveryCreator($packageData);
-            var_dump($id.' - SlowDelivery: ' . $slow->calcDeliveryCost() . PHP_EOL);
+            $delivery = new FastDeliveryCreator($packageData);
+            var_dump($id.' - FastDelivery: ' . $delivery->calcDeliveryCost() . PHP_EOL);
+        }
+
+        echo '<hr>';
+
+        foreach (self::$testPackages as $id => $packageData) {
+            $delivery = new SlowDeliveryCreator($packageData);
+            var_dump($id.' - SlowDelivery: ' . $delivery->calcDeliveryCost() . PHP_EOL);
         }
     }
 }

@@ -11,11 +11,10 @@ abstract class Creator
     public $targetKladr; //кладр куда везем
     public $weight; //вес отправления в кг
 
-    abstract public function getDeliveryService(): DeliveryService;
+    abstract public function getDeliveryService();
 
     public function calcDeliveryCost(): string
     {
-        $delivery = $this->getDeliveryService();
-        return $delivery->calculate();
+        return $this->mainCalculate();
     }
 }
