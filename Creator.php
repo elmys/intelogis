@@ -1,8 +1,8 @@
 <?php
 
-namespace elmys\intelogist;
+namespace elmys\intelogis;
 
-use elmys\intelogist\components\DeliveryService;
+use elmys\intelogis\components\DeliveryService;
 
 abstract class Creator
 {
@@ -13,10 +13,9 @@ abstract class Creator
 
     abstract public function getDeliveryService(): DeliveryService;
 
-    public function calcDeliveryCost(): float
+    public function calcDeliveryCost(): string
     {
         $delivery = $this->getDeliveryService();
         return $delivery->calculate();
     }
-
 }

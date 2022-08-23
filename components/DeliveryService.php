@@ -1,8 +1,8 @@
 <?php
 
-namespace elmys\intelogist\components;
+namespace elmys\intelogis\components;
 
 interface DeliveryService
 {
-    public function calculate(): float;
+    public function calculate(): string;
 }

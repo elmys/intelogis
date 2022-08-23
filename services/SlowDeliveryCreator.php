@@ -5,19 +5,19 @@ namespace elmys\intelogis\services;
 use elmys\intelogis\components\DeliveryService;
 use elmys\intelogis\Creator;
 
-class FastDeliveryCreator extends Creator
+class SlowDeliveryCreator extends Creator
 {
     public function __construct(array $params)
     {
         foreach ($params as $name => $param) {
-            $this->$name = $param;
+            if(property_exists($this, $name)){
+                $this->$name = $param;
+            }
         }
-
-        //$this->platformCreator = StringHelper::basename(get_class($this));
     }
 
     public function getDeliveryService(): DeliveryService
     {
-        return new FastDelivery();
+        return new SlowDelivery($this);
     }
 }
